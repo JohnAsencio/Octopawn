@@ -3,44 +3,45 @@ import json
 tt = {}
 
 def octopawn():
-    # Define your initial state
+
     initial_state = ("pppp.........PPPP", 'W')
     
-    # Run the negamax algorithm from the initial state
+
     negamax(initial_state)
-    # Save the transposition table to a JSON file
+    
     save_to_json()
 
 def negamax(s):
-    print(s)
+  #  print(s)
     if s in tt:
         return tt[s]
     
     board, side = s
 
-    # Check if the current state is a win for the opponent
     if is_win_for_opponent(board, side):
         tt[s] = -1
         return -1
 
-    # Get legal moves for the current state
     ms = legal_moves(board, side)
+    if ms == []:
+        tt[s] = -1
+        return -1
 
     v = None
     for m in ms:
-        b = make_move(board, m)
+        b = m
         r = -negamax((b, opponent(side)))
 
         if v is None or r > v:
             v = r
-    if v == -1:
-        tt[s] = v
+            
+    tt[s] = v
     return v
 
-# Function to check if the current state is a win for the opponent
+
 def is_win_for_opponent(board, side):
-    if legal_moves(board, side) == []:
-        return True
+   # if legal_moves(board, side) == []:
+   #     return True
     
     if side == 'B':
         for i in range(0, 3):
@@ -67,13 +68,13 @@ def legal_moves(board, side):
                     s[i+4] = v
                     moves.append(''.join(s))
                 # Check if the pawn can capture diagonally to the right
-                if i + 5 < len(board) and board[i + 5] == opponent(side):
+                if i + 5 < len(board) and board[i + 5] == opponent(side) and i not in (3, 7, 11):
                     s = list(board)
                     s[i] = '.'
                     s[i+5] = v
                     moves.append(''.join(s))
                 # Check if the pawn can capture diagonally to the left
-                if i + 3 >= 0 and board[i + 3] == opponent(side):
+                if i + 3 >= 0 and board[i + 3] == opponent(side) and i + 3 < len(board) and i not in (0, 4, 8, 12):
                     s = list(board)
                     s[i] = '.'
                     s[i+3] = v
@@ -89,34 +90,38 @@ def legal_moves(board, side):
                     s[i-4] = v
                     moves.append(''.join(s)) 
                 # Check if the pawn can capture diagonally to the right
-                if i - 3 < len(board) and board[i - 3] == opponent(side):
+                if i - 3 < len(board) and board[i - 3] == opponent(side) and i not in (3, 7, 11, 15):
                     s = list(board)
                     s[i] = '.'
                     s[i-3] = v
                     moves.append(''.join(s))
                 # Check if the pawn can capture diagonally to the left
-                if i - 5 >= 0 and board[i - 5] == opponent(side):
+                if i - 5 >= 0 and board[i - 5] == opponent(side) and i not in (12, 8, 4, 0):
                     s = list(board)
                     s[i] = '.'
                     s[i-5] = v
                     moves.append(''.join(s))
 
+   # print(moves)
+
     return moves
 
 
-# Function to make a move on the board
+
 def make_move(board, move):
     return move
 
-# Function to get the opponent's side
+
 def opponent(side):
     return 'W' if side == 'B' else 'B'
 
-# Save the transposition table to a JSON file
+
 def save_to_json():
-    tt_str_keys = {str(key): value for key, value in tt.items()}
-    
+    tt_str_keys = {','.join(key): value for key, value in tt.items()}
+
     with open('4pawn.json', 'w') as json_file:
-        json.dump(tt_str_keys, json_file, indent = 1)
-# Run the Octopawn algorithm
+        json.dump(tt_str_keys, json_file, indent=1, sort_keys=True)
+
+
+
 octopawn()
