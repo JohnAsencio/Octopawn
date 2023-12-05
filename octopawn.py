@@ -1,11 +1,13 @@
 import json
 tt = {}
 
+#class for a state
 class State:
     def __init__(self, board, side):
         self.board = board
         self.side = side
 
+#octopawn function
 def octopawn():
 
     initial_state = State("..p.p..P..p.PP..", 'W')#, [])
@@ -14,6 +16,7 @@ def octopawn():
     
     save_to_json()
 
+#negamax algorithm
 def negamax(s):
     if s in tt:
         return tt[s]
@@ -40,7 +43,7 @@ def negamax(s):
     tt[s] = v
     return v
 
-
+#function to determine win state for for opponent
 def is_win_for_opponent(board, side):
     
     s = opponent(side)
@@ -56,7 +59,7 @@ def is_win_for_opponent(board, side):
                 return True
     return False
 
-# Function to get legal moves for the current state
+# function to get legal moves for the current state
 def legal_moves(board, side):
     moves = []
     if side == 'B':
@@ -64,44 +67,43 @@ def legal_moves(board, side):
         m = 'P'
         for i in range(len(board)):
             if board[i] == n:
-                # Check if the pawn can move forward
+                # check if the pawn can move forward
                 if i + 4 < len(board) and board[i + 4] == '.':
                     s = list(board)
                     s[i] = '.'
                     s[i+4] = n
                     moves.append(''.join(s)) 
                 
-                # Check if the pawn can capture diagonally to the right
+                # check if the pawn can capture diagonally to the right
                 if i + 5 < len(board) and board[i + 5] == m and i not in (3, 7, 11):
                     s = list(board)
                     s[i] = '.'
                     s[i+5] = n
                     moves.append(''.join(s))
-                # Check if the pawn can capture diagonally to the left
+                # check if the pawn can capture diagonally to the left
                 if i + 3 < len(board) and board[i + 3] == m and i not in (0, 4, 8, 12):
                     s = list(board)
                     s[i] = '.'
                     s[i+3] = n
-                  #  print(s)
                     moves.append(''.join(s)) 
     else:       
         n = 'P'
         m = 'p'
         for i in range(len(board)):
             if board[i] == n:
-                # Check if the pawn can move forward
+                # check if the pawn can move forward
                 if i - 4 < len(board) and board[i - 4] == '.':
                     s = list(board)
                     s[i] = '.'
                     s[i-4] = n
                     moves.append(''.join(s)) 
-                # Check if the pawn can capture diagonally to the right
+                # check if the pawn can capture diagonally to the right
                 if i - 3 < len(board) and board[i - 3] == m and i not in (3, 7, 11, 15):
                     s = list(board)
                     s[i] = '.'
                     s[i-3] = n
                     moves.append(''.join(s))
-                # Check if the pawn can capture diagonally to the left
+                # check if the pawn can capture diagonally to the left
                 if i - 5 >= 0 and board[i - 5] == m and i not in (12, 8, 4, 0):
                     s = list(board)
                     s[i] = '.'
@@ -111,11 +113,14 @@ def legal_moves(board, side):
     return list(moves)
 
 
-
+#make move function returns the move, because in the legal
+#moves function i make a new board and apply the move to that 
+#board already
 def make_move(move):
     return move
 
 
+#function to get opponents side
 def opponent(side):
     if side == 'W':
         return 'B'
@@ -125,6 +130,7 @@ def opponent(side):
         return 'X'
 
 
+#function to save to JSON
 def save_to_json():
     tt_str_keys = {','.join((s.board, str(s.side))): value for s, value in tt.items()}
 
